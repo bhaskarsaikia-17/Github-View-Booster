@@ -1,0 +1,5 @@
+{
+    "counter_url": "YOUR_GITHUB_COUNTER_URL",
+    "threads": 100,
+    "use_proxy": "y"
+  }
