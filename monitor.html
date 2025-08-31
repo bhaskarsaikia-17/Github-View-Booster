@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub View Booster Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-indicator.connected {
+            background: #44ff44;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #87CEEB;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            opacity: 0.8;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #4ecdc4, #45b7b8);
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #45b7b8);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 GitHub View Booster Monitor</h1>
+            <p>Real-time monitoring dashboard</p>
+            <div class="status">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">Disconnected</span>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3>📊 Request Statistics</h3>
+                <div class="stat-row">
+                    <span class="stat-label">✅ Successful:</span>
+                    <span class="stat-value" id="successful">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">❌ Failed:</span>
+                    <span class="stat-value" id="failed">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">📈 Success Rate:</span>
+                    <span class="stat-value" id="successRate">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⚡ Req/sec:</span>
+                    <span class="stat-value" id="reqPerSec">0.00</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="successProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>💻 System Monitor</h3>
+                <div class="stat-row">
+                    <span class="stat-label">🔥 CPU Usage:</span>
+                    <span class="stat-value" id="cpuUsage">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🧠 Memory:</span>
+                    <span class="stat-value" id="memoryUsage">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">💾 Memory Used:</span>
+                    <span class="stat-value" id="memoryUsed">0 MB</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">📤 Network Out:</span>
+                    <span class="stat-value" id="networkOut">0 MB</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">📥 Network In:</span>
+                    <span class="stat-value" id="networkIn">0 MB</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>🌐 Proxy Statistics</h3>
+                <div class="stat-row">
+                    <span class="stat-label">Total Proxies:</span>
+                    <span class="stat-value" id="proxyTotal">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Working Proxies:</span>
+                    <span class="stat-value" id="proxyWorking">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Failed Proxies:</span>
+                    <span class="stat-value" id="proxyFailed">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Proxy Success Rate:</span>
+                    <span class="stat-value" id="proxySuccessRate">0%</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>⏱️ Runtime Information</h3>
+                <div class="stat-row">
+                    <span class="stat-label">🕐 Runtime:</span>
+                    <span class="stat-value" id="runtime">00:00:00</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🚫 Proxy Errors:</span>
+                    <span class="stat-value" id="proxyErrors">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⏰ Timeouts:</span>
+                    <span class="stat-value" id="timeouts">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🛑 Rate Limited:</span>
+                    <span class="stat-value" id="rateLimited">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="resetStats()">🔄 Reset Stats</button>
+            <button class="btn secondary" onclick="reconnect()">🔗 Reconnect</button>
+        </div>
+        
+        <div class="footer">
+            <p>Crafted With ❤️ By Bhaskar</p>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        
+        function connect() {
+            try {
+                ws = new WebSocket('ws://localhost:8765');
+                
+                ws.onopen = function() {
+                    console.log('Connected to WebSocket server');
+                    document.getElementById('statusIndicator').classList.add('connected');
+                    document.getElementById('statusText').textContent = 'Connected';
+                    reconnectAttempts = 0;
+                };
+                
+                ws.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'stats_update') {
+                        updateStats(data);
+                    }
+                };
+                
+                ws.onclose = function() {
+                    console.log('Disconnected from WebSocket server');
+                    document.getElementById('statusIndicator').classList.remove('connected');
+                    document.getElementById('statusText').textContent = 'Disconnected';
+                    
+                    // Auto-reconnect
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        setTimeout(() => {
+                            reconnectAttempts++;
+                            connect();
+                        }, 2000 * reconnectAttempts);
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                };
+            } catch (error) {
+                console.error('Failed to connect:', error);
+            }
+        }
+        
+        function updateStats(data) {
+            const stats = data.stats;
+            const system = data.system;
+            const proxy = data.proxy;
+            
+            // Request statistics
+            document.getElementById('successful').textContent = stats.successful_requests;
+            document.getElementById('failed').textContent = stats.failed_requests;
+            document.getElementById('successRate').textContent = stats.success_rate.toFixed(1) + '%';
+            document.getElementById('reqPerSec').textContent = stats.requests_per_second.toFixed(2);
+            document.getElementById('successProgress').style.width = stats.success_rate + '%';
+            
+            // System statistics
+            document.getElementById('cpuUsage').textContent = system.cpu_percent.toFixed(1) + '%';
+            document.getElementById('memoryUsage').textContent = system.memory_percent.toFixed(1) + '%';
+            document.getElementById('memoryUsed').textContent = system.memory_used_mb.toFixed(1) + ' MB';
+            document.getElementById('networkOut').textContent = system.network_sent_mb.toFixed(1) + ' MB';
+            document.getElementById('networkIn').textContent = system.network_recv_mb.toFixed(1) + ' MB';
+            
+            // Proxy statistics
+            document.getElementById('proxyTotal').textContent = proxy.total;
+            document.getElementById('proxyWorking').textContent = proxy.working;
+            document.getElementById('proxyFailed').textContent = proxy.failed;
+            document.getElementById('proxySuccessRate').textContent = proxy.success_rate.toFixed(1) + '%';
+            
+            // Runtime information
+            const elapsed = stats.elapsed_time;
+            const hours = Math.floor(elapsed / 3600);
+            const minutes = Math.floor((elapsed % 3600) / 60);
+            const seconds = Math.floor(elapsed % 60);
+            document.getElementById('runtime').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('proxyErrors').textContent = stats.proxy_errors;
+            document.getElementById('timeouts').textContent = stats.timeout_errors;
+            document.getElementById('rateLimited').textContent = stats.rate_limited;
+        }
+        
+        function resetStats() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({command: 'reset_stats'}));
+            }
+        }
+        
+        function reconnect() {
+            if (ws) {
+                ws.close();
+            }
+            reconnectAttempts = 0;
+            connect();
+        }
+        
+        // Initialize connection
+        connect();
+        
+        // Periodically request stats
+        setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({command: 'get_stats'}));
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

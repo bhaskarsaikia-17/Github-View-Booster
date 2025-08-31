@@ -1,5 +1,28 @@
 {
-    "counter_url": "YOUR_GITHUB_COUNTER_URL",
-    "threads": 100,
-    "use_proxy": "y"
-  }
+    "counter_url": "https://camo.githubusercontent.com/174f981863dde7e53e4d5ab6baaf134f8630b431a4cd72223bcb76dc7d7d5ecf/68747470733a2f2f6b6f6d617265762e636f6d2f67687076632f3f757365726e616d653d4465762d53616368696e3235",
+    "concurrent_workers": 50,
+    "use_proxy": true,
+    "rate_limit": {
+        "requests_per_second": 10,
+        "burst_size": 20
+    },
+    "websocket": {
+        "enabled": true,
+        "host": "localhost",
+        "port": 8765
+    },
+    "request_settings": {
+        "timeout": 15,
+        "max_retries": 3,
+        "retry_delay": 1,
+        "user_agents": [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        ]
+    },
+    "monitoring": {
+        "stats_update_interval": 5,
+        "enable_system_monitoring": true
+    }
+}
